@@ -1,12 +1,12 @@
-import express, {ErrorRequestHandler, RequestHandler} from "express";
-import createError from "http-errors";
-import path from "path";
-import cookieParser from "cookie-parser";
-import logger from "morgan";
-import helmet from "helmet";
+import express, { RequestHandler, ErrorRequestHandler } from 'express';
+import createError from 'http-errors';
+import path from 'path';
+import cookieParser from 'cookie-parser';
+import logger from 'morgan';
+import helmet from 'helmet';
 
-import indexRouter from "./routes";
-import usersRouter from "./routes/users";
+import indexRouter from './routes';
+import usersRouter from './routes/users';
 
 const app = express();
 
@@ -18,7 +18,7 @@ app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -33,14 +33,8 @@ const invalidUrlHandler: RequestHandler = (req, res, next) => {
 app.use(invalidUrlHandler);
 
 // error handler
-const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
+const errorHandler: ErrorRequestHandler = (err, req, res, _) => {
   res.status(err.status || 500);
-  res.render('error');
 };
 
 app.use(errorHandler);
