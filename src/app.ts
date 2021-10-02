@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import express, { RequestHandler, ErrorRequestHandler } from 'express';
 import createError from 'http-errors';
 import path from 'path';
@@ -7,10 +9,12 @@ import helmet from 'helmet';
 
 import indexRouter from './routes';
 import usersRouter from './routes/users';
+import connectMongoDB from './config/db';
 
 const app = express();
 
 app.use(helmet());
+void connectMongoDB();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
