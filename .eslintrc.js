@@ -31,5 +31,5 @@ module.exports = {
       },
     },
   ],
-  ignorePatterns: ['!.eslintrc.js', '!.prettierrc.json', 'src/bin/www.js'],
+  ignorePatterns: ['!.eslintrc.js', '!.prettierrc.json'],
 };
