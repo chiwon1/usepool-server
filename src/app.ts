@@ -7,9 +7,11 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import helmet from 'helmet';
 
+import rides from './routes/rides';
+import connectMongoDB from './config/db';
+
 import indexRouter from './routes';
 import usersRouter from './routes/users';
-import connectMongoDB from './config/db';
 
 const app = express();
 
@@ -24,6 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/rides', rides);
 
 // catch 404 and forward to error handler
 const invalidUrlHandler: RequestHandler = (req, res, next) => {
