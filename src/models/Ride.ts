@@ -2,9 +2,6 @@ import mongoose from 'mongoose';
 
 const rideSchema = new mongoose.Schema(
   {
-    isFullyBooked: {
-      type: Boolean,
-    },
     departFrom: {
       type: String,
       required: true,
@@ -21,13 +18,20 @@ const rideSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+    capacity: {
+      type: Number,
+      required: true,
+    },
+    isFullyBooked: {
+      type: Boolean,
+    },
     distance: {
       type: String,
     },
     driver: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      // required: true,
     },
     passengers: {
       type: [
@@ -36,10 +40,6 @@ const rideSchema = new mongoose.Schema(
           ref: 'User',
         },
       ],
-    },
-    capacity: {
-      type: Number,
-      required: true,
     },
   },
   { timestamps: true },
