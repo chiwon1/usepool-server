@@ -10,6 +10,7 @@ const ERROR = {
   INVALID_USER: 'Invalid user',
   INVALID_ACCESS: 'Invalid access',
   INVALID_DATA: 'Invalid data',
+  INVALID_TOKEN: 'Invalid token',
 };
 
 export default ERROR;
