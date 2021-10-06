@@ -4,7 +4,7 @@ import ERROR from '../constants/error';
 import { RequestHandler } from 'express';
 import { ICookies } from '../types/express';
 
-export const authentication: RequestHandler = async (req, res, next) => {
+export const auth: RequestHandler = async (req, res, next) => {
   const token = (req.cookies as ICookies).x_auth;
 
   if (!token) {
@@ -27,4 +27,4 @@ export const authentication: RequestHandler = async (req, res, next) => {
   }
 };
 
-export default authentication;
+export default auth;

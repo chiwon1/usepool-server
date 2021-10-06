@@ -6,10 +6,6 @@ import mongoose from 'mongoose';
 import { IRide } from '../types/Ride';
 
 export const newRide: RequestHandler = async (req, res, next) => {
-  // if (!req.user) {
-  //   return console.log('no auth');
-  // }
-
   try {
     if (!req.body) {
       return;

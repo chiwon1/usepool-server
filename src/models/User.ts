@@ -2,9 +2,10 @@ import mongoose, { Document, Model } from 'mongoose';
 import jwt from 'jsonwebtoken';
 import createError from 'http-errors';
 import ERROR from '../constants/error';
+import { IDecoded } from '../types';
 
 interface IUser {
-  kakaoId: string;
+  kakaoId: number;
   nickname: string;
   profilePicture?: string;
   ridesAsDriver?: [];
@@ -13,6 +14,7 @@ interface IUser {
 }
 
 export interface IUserDocument extends IUser, Document {
+  _id: mongoose.Schema.Types.ObjectId;
   generateToken: (
     payload: string | Buffer | Record<string, unknown>,
   ) => Promise<void>;
@@ -24,7 +26,7 @@ interface IUserModel extends Model<IUserDocument> {
 
 const userSchema = new mongoose.Schema({
   kakaoId: {
-    type: String,
+    type: Number,
     required: true,
     unique: true,
   },
@@ -74,9 +76,12 @@ userSchema.statics.findByToken = async function (token: string) {
   const user = this as IUserModel;
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY!);
+    const { kakaoId } = jwt.verify(
+      token,
+      process.env.JWT_SECRET_KEY!,
+    ) as IDecoded;
 
-    return await user.findOne({ _id: decoded, token });
+    return await user.findOne({ kakaoId, token });
   } catch (err) {
     throw createError(500, ERROR.INTERNAL_SERVER_ERROR);
   }

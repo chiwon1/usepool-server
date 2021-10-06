@@ -1,5 +1,5 @@
 export interface IKakaoInfo {
-  id: string;
+  id: number;
   connected_at: string;
   properties: {
     nickname: string;

@@ -14,6 +14,8 @@ import indexRouter from './routes';
 import usersRouter from './routes/users';
 import login from './routes/login';
 import cors from 'cors';
+import logout from './routes/logout';
+import auth from './middlewares/auth';
 
 const app = express();
 
@@ -34,6 +36,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/login', login);
+app.use('/logout', auth, logout);
 app.use('/users', usersRouter);
 app.use('/rides', rides);
 app.use('/', indexRouter);
