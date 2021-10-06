@@ -5,7 +5,6 @@ import User from '../models/User';
 import mongoose from 'mongoose';
 import axios from 'axios';
 import { IKakaoInfo } from '../types/Kakao';
-import { encode } from '../utils/jwt';
 
 export const login: RequestHandler = async (req, res, next) => {
   try {
@@ -22,27 +21,32 @@ export const login: RequestHandler = async (req, res, next) => {
 
     const { id, properties } = data as unknown as IKakaoInfo;
 
-    const hasLoggedin = await User.exists({
-      kakaoId: id,
-    });
-
-    if (!hasLoggedin) {
-      await User.create({
-        kakaoId: id,
-        nickname: properties.nickname,
-        profilePicture: properties.profile_image,
-      });
-    }
-
     const userInfo = {
       kakaoId: id,
       nickname: properties.nickname,
       profilePicture: properties.profile_image,
     };
 
-    const token = encode(userInfo);
+    const hasLoggedin = await User.exists({
+      kakaoId: id,
+    });
 
-    res.status(200).json({ result: 'success', token, userInfo });
+    if (!hasLoggedin) {
+      await User.create({
+        ...userInfo,
+      });
+    }
+
+    const user = await User.findOne({ kakaoId: id });
+
+    if (user) {
+      await user.generateToken(userInfo);
+
+      res
+        .status(200)
+        .cookie('x_auth', user.token)
+        .json({ result: 'success', userInfo });
+    }
   } catch (err) {
     if (err instanceof mongoose.Error.ValidationError) {
       next(createError(400, ERROR.INVALID_DATA));
