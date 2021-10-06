@@ -21,6 +21,7 @@ module.exports = {
   plugins: ['@typescript-eslint', 'prettier'],
   rules: {
     'new-cap': 'off',
+    camelcase: 'off',
   },
   overrides: [
     {

@@ -1,21 +1,17 @@
 import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
+  kakaoId: {
+    type: Number,
     required: true,
+    unique: true,
   },
-  email: {
+  nickname: {
     type: String,
     required: true,
   },
   profilePicture: {
     type: String,
-  },
-  firebaseId: {
-    type: String,
-    required: true,
-    unique: true,
   },
   ridesAsDriver: {
     type: [

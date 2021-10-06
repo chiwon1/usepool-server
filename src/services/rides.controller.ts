@@ -3,7 +3,7 @@ import createError from 'http-errors';
 import ERROR from '../constants/error';
 import Ride from '../models/Ride';
 import mongoose from 'mongoose';
-import { IRide } from '../types/IRide';
+import { IRide } from '../types/Ride';
 
 export const newRide: RequestHandler = async (req, res, next) => {
   // if (!req.user) {
