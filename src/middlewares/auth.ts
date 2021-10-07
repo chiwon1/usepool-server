@@ -8,7 +8,7 @@ export const auth: RequestHandler = async (req, res, next) => {
   const token = (req.cookies as ICookies).x_auth;
 
   if (!token) {
-    return next(createError(400, ERROR.INVALID_TOKEN));
+    return next(createError(401, ERROR.INVALID_TOKEN));
   }
 
   try {
