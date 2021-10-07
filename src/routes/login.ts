@@ -1,9 +1,9 @@
 import express from 'express';
 const router = express.Router();
 
-import { queryTokenValidator } from '../middlewares/queryTokenValidator';
+import { queryValidator } from '../middlewares/queryValidator';
 import { login } from '../services/login.controller';
 
-router.post('/', queryTokenValidator, login);
+router.post('/', queryValidator, login);
 
 export default router;

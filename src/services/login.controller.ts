@@ -8,13 +8,25 @@ import { IKakaoInfo } from '../types/Kakao';
 
 export const login: RequestHandler = async (req, res, next) => {
   try {
-    const { kakaoToken } = req.query;
+    const { authCode } = req.query;
+
+    const kakaoResponse = await axios({
+      method: 'post',
+      url: `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${process
+        .env.KAKAO_CLIENT_ID!}&redirect_uri=${process.env
+        .KAKAO_REDIRECT_URI!}&code=${String(authCode)}`,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+      },
+    });
+
+    const { access_token } = kakaoResponse.data;
 
     const { data } = await axios({
       method: 'get',
       url: 'https://kapi.kakao.com/v2/user/me',
       headers: {
-        Authorization: `Bearer ${String(kakaoToken)}`,
+        Authorization: `Bearer ${String(access_token)}`,
         'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
       },
     });

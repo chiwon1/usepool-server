@@ -3,16 +3,16 @@ import createError from 'http-errors';
 import ERROR from '../constants/error';
 import mongoose from 'mongoose';
 
-export const queryTokenValidator: RequestHandler = (req, res, next) => {
+export const queryValidator: RequestHandler = (req, res, next) => {
   try {
     if (!req.query) {
-      throw createError(400, ERROR.INVALID_TOKEN);
+      throw createError(400, ERROR.INVALID_DATA);
     }
 
-    const { kakaoToken } = req.query;
+    const { authCode } = req.query;
 
-    if (!kakaoToken) {
-      throw createError(400, ERROR.INVALID_TOKEN);
+    if (!authCode) {
+      throw createError(400, ERROR.INVALID_DATA);
     }
 
     next();
