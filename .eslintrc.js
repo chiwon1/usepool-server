@@ -22,13 +22,13 @@ module.exports = {
   rules: {
     'new-cap': 'off',
     camelcase: 'off',
+    '@typescript-eslint/no-unsafe-member-access': 'off',
   },
   overrides: [
     {
       files: ['app.ts'],
       rules: {
         '@typescript-eslint/no-unused-vars': 'off',
-        '@typescript-eslint/no-unsafe-member-access': 'off',
       },
     },
   ],

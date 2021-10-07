@@ -4,7 +4,7 @@ export interface IRide {
   departFrom: string;
   departTime: Date;
   arriveAt: string;
-  arriveTime: string;
+  arriveTime: Date;
   capacity: number;
   isFullyBooked?: boolean;
   distance?: string;
