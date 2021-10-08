@@ -6,19 +6,19 @@ const rideSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    departDate: {
+      type: String,
+      required: true,
+    },
     departTime: {
-      type: Date,
+      type: String,
       required: true,
     },
     arriveAt: {
       type: String,
       required: true,
     },
-    arriveTime: {
-      type: Date,
-      required: true,
-    },
-    capacity: {
+    seatCapacity: {
       type: Number,
       required: true,
     },
@@ -31,7 +31,11 @@ const rideSchema = new mongoose.Schema(
     driver: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      // required: true,
+      required: true,
+    },
+    driverNickname: {
+      type: String,
+      required: true,
     },
     passengers: {
       type: [

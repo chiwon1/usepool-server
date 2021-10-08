@@ -2,12 +2,13 @@ import mongoose from 'mongoose';
 
 export interface IRide {
   departFrom: string;
-  departTime: Date;
+  departDate: string;
+  departTime: string;
   arriveAt: string;
-  arriveTime: Date;
-  capacity: number;
+  seatCapacity: number;
   isFullyBooked?: boolean;
   distance?: string;
-  driver?: mongoose.Schema.Types.ObjectId;
+  driver: mongoose.Schema.Types.ObjectId;
+  driverNickname: string;
   passengers?: mongoose.Schema.Types.ObjectId[];
 }
