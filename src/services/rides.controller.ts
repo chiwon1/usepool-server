@@ -1,9 +1,9 @@
 import { RequestHandler } from 'express';
 import createError from 'http-errors';
 import ERROR from '../constants/error';
-import Ride from '../models/Ride';
 import mongoose from 'mongoose';
 import { IRide } from '../types/Ride';
+import Ride from '../models/Ride';
 
 export const newRide: RequestHandler = async (req, res, next) => {
   try {
@@ -52,6 +52,32 @@ export const newRide: RequestHandler = async (req, res, next) => {
     });
 
     return res.status(200).json({ result: 'success' });
+  } catch (err) {
+    if (err instanceof mongoose.Error.ValidationError) {
+      next(createError(400, ERROR.INVALID_DATA));
+    }
+
+    next(err);
+  }
+};
+
+export const searchRides: RequestHandler = async (req, res, next) => {
+  try {
+    const { departFrom, arriveAt, departDate } = req.query;
+
+    const searchResult = await Ride.find({
+      departFrom: departFrom,
+      arriveAt: arriveAt,
+      departDate: departDate,
+    }).exec();
+
+    const populatedResult = await Ride.populate(searchResult, 'driver');
+
+    console.log('populatedResult', populatedResult);
+
+    return res
+      .status(200)
+      .json({ result: 'success', searchResult: populatedResult });
   } catch (err) {
     if (err instanceof mongoose.Error.ValidationError) {
       next(createError(400, ERROR.INVALID_DATA));
