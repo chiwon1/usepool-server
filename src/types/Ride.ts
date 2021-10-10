@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
 export interface IRide {
   departFrom: string;
@@ -10,5 +10,7 @@ export interface IRide {
   distance?: string;
   driver: mongoose.Schema.Types.ObjectId;
   driverNickname: string;
-  passengers?: mongoose.Schema.Types.ObjectId[];
+  passengers: mongoose.Schema.Types.ObjectId[];
 }
+
+export interface IRideModel extends IRide, Document {}

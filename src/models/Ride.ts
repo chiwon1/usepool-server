@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { IRideModel } from '../types/Ride';
 
 const rideSchema = new mongoose.Schema(
   {
@@ -49,4 +50,4 @@ const rideSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-export default mongoose.model('Ride', rideSchema);
+export default mongoose.model<IRideModel>('Ride', rideSchema);

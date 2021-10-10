@@ -1,7 +1,7 @@
 const ERROR = {
   INTERNAL_SERVER_ERROR: 'Internal Server Error',
   DUPLICATE_EMAIL: 'Entered ID already exists.',
-  INVALID_RIDE_ACCESS: 'Invalid ride access',
+  INVALID_RIDE: 'Invalid ride access',
   INVALID_DEPART_LOCATION: 'Invalid depart location',
   INVALID_DEPART_TIME: 'Invalid depart time',
   INVALID_DEPART_DATE: 'Invalid depart date',
