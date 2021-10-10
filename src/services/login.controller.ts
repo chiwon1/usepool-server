@@ -36,7 +36,7 @@ export const login: RequestHandler = async (req, res, next) => {
     const userInfo = {
       kakaoId: id,
       nickname: properties.nickname,
-      profilePicture: properties.profile_image,
+      profilePicture: properties?.profile_image,
     };
 
     const hasLoggedin = await User.exists({
@@ -51,14 +51,16 @@ export const login: RequestHandler = async (req, res, next) => {
 
     const user = await User.findOne({ kakaoId: id });
 
-    if (user) {
-      await user.generateToken(userInfo);
-
-      res
-        .status(200)
-        .cookie('x_auth', user.token)
-        .json({ result: 'success', userInfo });
+    if (!user) {
+      throw createError(400, ERROR.INVALID_USER);
     }
+
+    await user.generateToken(userInfo);
+
+    res
+      .status(200)
+      .cookie('x_auth', user.token)
+      .json({ result: 'success', userInfo });
   } catch (err) {
     if (err instanceof mongoose.Error.ValidationError) {
       next(createError(400, ERROR.INVALID_DATA));

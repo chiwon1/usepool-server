@@ -8,8 +8,8 @@ interface IUser {
   kakaoId: number;
   nickname: string;
   profilePicture?: string;
-  ridesAsDriver?: [];
-  ridesAsPassenger?: [];
+  ridesAsDriver: mongoose.Schema.Types.ObjectId[];
+  ridesAsPassenger: mongoose.Schema.Types.ObjectId[];
   token?: string;
 }
 
