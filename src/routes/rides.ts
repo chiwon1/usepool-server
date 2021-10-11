@@ -1,6 +1,6 @@
 import express from 'express';
 import {
-  bookRide,
+  book,
   details,
   newRide,
   searchRides,
@@ -11,7 +11,7 @@ const router = express.Router();
 router.post('/new', newRide);
 router.get('/search', searchQueryValidator, searchRides);
 router.get('/:_id', details);
-router.post('/:_id', bookRide);
+router.post('/:_id', book);
 // router.delete('/:_id/delete', controller.delete);
 
 export default router;

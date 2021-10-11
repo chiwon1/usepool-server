@@ -51,12 +51,6 @@ export const newRide: RequestHandler = async (req, res, next) => {
       driver: req?.user?._id,
     });
 
-    const targetUser = req.user;
-
-    targetUser!.ridesAsDriver = [...targetUser!.ridesAsDriver, req.user!._id];
-
-    await targetUser!.save();
-
     return res.status(200).json({ result: 'success' });
   } catch (err) {
     if (err instanceof mongoose.Error.ValidationError) {
@@ -123,7 +117,7 @@ export const details: RequestHandler = async (req, res, next) => {
   }
 };
 
-export const bookRide: RequestHandler = async (req, res, next) => {
+export const book: RequestHandler = async (req, res, next) => {
   try {
     if (!req.params) {
       throw createError(400, ERROR.INVALID_DATA);
@@ -139,7 +133,7 @@ export const bookRide: RequestHandler = async (req, res, next) => {
       return next(createError(400, ERROR.INVALID_DATA));
     }
 
-    const rideId = _id;
+    const rideId = _id as unknown as mongoose.Schema.Types.ObjectId;
     const userId = req.user?._id;
 
     console.log('req.user', req.user);
@@ -156,7 +150,7 @@ export const bookRide: RequestHandler = async (req, res, next) => {
 
     const targetUser = req.user;
 
-    targetUser!.ridesAsPassenger = [...targetUser!.ridesAsPassenger, userId!];
+    targetUser!.ridesAsPassenger = [...targetUser!.ridesAsPassenger, rideId];
 
     await targetUser!.save();
 

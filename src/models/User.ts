@@ -8,7 +8,6 @@ interface IUser {
   kakaoId: number;
   nickname: string;
   profilePicture?: string;
-  ridesAsDriver: mongoose.Schema.Types.ObjectId[];
   ridesAsPassenger: mongoose.Schema.Types.ObjectId[];
   token?: string;
 }
@@ -36,14 +35,6 @@ const userSchema = new mongoose.Schema({
   },
   profilePicture: {
     type: String,
-  },
-  ridesAsDriver: {
-    type: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Ride',
-      },
-    ],
   },
   ridesAsPassenger: {
     type: [
