@@ -91,7 +91,7 @@ export const searchRides: RequestHandler = async (req, res, next) => {
   }
 };
 
-export const getDetails: RequestHandler = async (req, res, next) => {
+export const details: RequestHandler = async (req, res, next) => {
   try {
     if (!req.params) {
       throw createError(400, ERROR.INVALID_DATA);
