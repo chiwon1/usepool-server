@@ -210,6 +210,7 @@ export const joinChat: RequestHandler = async (req, res, next) => {
     } else {
       const chatRoom = new ChatRoom({
         ride: rideId,
+        driver: ride.driver,
         passenger: userId,
         status: false,
         chat: [],

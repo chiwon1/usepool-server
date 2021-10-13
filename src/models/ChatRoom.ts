@@ -8,6 +8,11 @@ const chatRoomSchema = new mongoose.Schema(
       required: true,
       ref: 'Ride',
     },
+    driver: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'User',
+    },
     passenger: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
