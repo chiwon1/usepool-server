@@ -95,7 +95,7 @@ export const chatList: RequestHandler = async (req, res, next) => {
       throw createError(400, ERROR.INVALID_DATA);
     }
 
-    await ChatRoom.populate(chatRoom, 'chats');
+    await ChatRoom.populate(chatRoom, 'chatList');
 
     res.status(200).json({ result: 'success', chatList: chatRoom.chatList });
   } catch (err) {

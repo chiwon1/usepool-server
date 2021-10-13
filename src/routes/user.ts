@@ -1,5 +1,6 @@
 import express from 'express';
-import { IUserDocument } from '../models/User';
+import { IUserDocument } from '../types/User';
+
 const router = express.Router();
 
 router.get('/', (req, res, next) => {

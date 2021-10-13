@@ -247,8 +247,6 @@ export const joinChat: RequestHandler = async (req, res, next) => {
             console.log('chat', chat);
           });
 
-          io.to(roomid).emit('hello', 'world');
-
           socket.on('disconnect', () => {
             console.log('disconnect');
           });
@@ -283,8 +281,6 @@ export const joinChat: RequestHandler = async (req, res, next) => {
 
       return res.status(200).json({ result: 'success', roomId: chatRoomId });
     }
-
-    // io.of(`/${rideId}`).emit('dm', chatWithSender);
   } catch (err) {
     if (err instanceof mongoose.Error.ValidationError) {
       next(createError(400, ERROR.INVALID_DATA));
@@ -293,71 +289,3 @@ export const joinChat: RequestHandler = async (req, res, next) => {
     next(err);
   }
 };
-
-//
-// export const getChats: RequestHandler = async (req, res, next) => {
-//   try {
-//     const ride = await Ride.findOne({ _id: req.params.rideId });
-//
-//     if (!ride) {
-//       return res.status(404).send('존재하지 않는 ride입니다.');
-//     }
-//
-//     await Ride.populate(ride, 'chats');
-//
-//     const chats = ride.chats;
-//
-//     return res.status(200).json({ result: 'success', chats });
-//   } catch (err) {
-//     console.log('err here', err);
-//
-//     next(err);
-//   }
-// };
-//
-// export const postChats: RequestHandler = async (req, res, next) => {
-//   try {
-//     const ride = await Ride.findOne({ _id: req.params.rideId });
-//
-//     if (!ride) {
-//       return res.status(404).send('존재하지 않는 ride입니다.');
-//     }
-//
-//     const senderId = req.user?.id;
-//
-//     const sender = await User.findOne({ _id: senderId });
-//
-//     console.log('req.body', req.body);
-//
-//     const chat = new Chat({
-//       sender: senderId,
-//       senderNickname: sender!.nickname,
-//       senderProfilePicture: sender!.profilePicture,
-//       contents: req.body.contents,
-//     });
-//
-//     await chat.save();
-//
-//     ride.chats = [...ride.chats, chat._id];
-//
-//     await ride.save();
-//
-//     const chatWithSender = await Chat.findOne({
-//       sender: senderId,
-//     });
-//
-//     const rideId = ride._id as string;
-//
-//     const io = req.app.get('io');
-//
-//     io.of(`/${rideId}`).emit('dm', chatWithSender);
-//
-//     // io.of(`/${ride._id}`).to(ride._id).emit('dm', chatWithSender);
-//
-//     return res.send('ok');
-//   } catch (err) {
-//     console.log('err here', err);
-//
-//     next(err);
-//   }
-// };
