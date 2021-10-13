@@ -3,10 +3,10 @@ import { IChatRoomModel } from '../types/ChatRoom';
 
 const chatRoomSchema = new mongoose.Schema(
   {
-    driver: {
+    ride: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: 'User',
+      ref: 'Ride',
     },
     passenger: {
       type: mongoose.Schema.Types.ObjectId,
@@ -15,6 +15,7 @@ const chatRoomSchema = new mongoose.Schema(
     },
     status: {
       type: Boolean,
+      required: true,
     },
     chats: {
       type: [

@@ -6,6 +6,8 @@ import { IRide } from '../types/Ride';
 import Ride from '../models/Ride';
 import User from '../models/User';
 import Chat from '../models/Chat';
+import ChatRoom from '../models/ChatRoom';
+import { Server, Socket } from 'socket.io';
 
 export const newRide: RequestHandler = async (req, res, next) => {
   try {
@@ -82,17 +84,17 @@ export const details: RequestHandler = async (req, res, next) => {
       throw createError(400, ERROR.INVALID_DATA);
     }
 
-    const { _id } = req.params;
+    const { id } = req.params;
 
-    if (!_id) {
+    if (!id) {
       throw createError(400, ERROR.INVALID_DATA);
     }
 
-    if (!mongoose.isValidObjectId(_id)) {
+    if (!mongoose.isValidObjectId(id)) {
       return next(createError(400, ERROR.INVALID_DATA));
     }
 
-    const details = await Ride.findOne({ _id }).exec();
+    const details = await Ride.findOne({ _id: id }).exec();
 
     await Ride.populate(details, 'driver');
 
@@ -112,33 +114,29 @@ export const book: RequestHandler = async (req, res, next) => {
       throw createError(400, ERROR.INVALID_DATA);
     }
 
-    const { _id } = req.params;
+    const { id: rideId } = req.params;
 
-    if (!_id) {
+    if (!rideId) {
       throw createError(400, ERROR.INVALID_DATA);
     }
 
-    if (!mongoose.isValidObjectId(_id)) {
+    if (!mongoose.isValidObjectId(rideId)) {
       return next(createError(400, ERROR.INVALID_DATA));
     }
 
-    const rideId = _id as unknown as mongoose.Schema.Types.ObjectId;
     const userId = req.user?._id;
-
-    const targetRide = await Ride.findOne({ rideId }).exec();
+    const targetUser = req.user;
+    const targetRide = await Ride.findOne({ _id: rideId }).exec();
 
     if (!targetRide) {
       return next(createError(400, ERROR.INVALID_RIDE));
     }
 
     targetRide.passengers = [...targetRide.passengers, userId];
-
-    await targetRide.save();
-
-    const targetUser = req.user;
-
     targetUser.ridesAsPassenger = [...targetUser.ridesAsPassenger, rideId];
 
+    // TODO 2021/10/13 cw: PromiseAll로 리팩토링
+    await targetRide.save();
     await targetUser.save();
 
     return res.status(200).json({ result: 'success' });
@@ -151,69 +149,159 @@ export const book: RequestHandler = async (req, res, next) => {
   }
 };
 
-export const getChats: RequestHandler = async (req, res, next) => {
+export const joinChat: RequestHandler = async (req, res, next) => {
   try {
-    const ride = await Ride.findOne({ _id: req.params.rideId });
-
-    if (!ride) {
-      return res.status(404).send('존재하지 않는 ride입니다.');
+    if (!req.params) {
+      throw createError(400, ERROR.INVALID_DATA);
     }
 
-    await Ride.populate(ride, 'chats');
+    const { id: rideId } = req.params;
 
-    const chats = ride.chats;
+    if (!rideId) {
+      throw createError(400, ERROR.INVALID_DATA);
+    }
 
-    return res.status(200).json({ result: 'success', chats });
+    if (!mongoose.isValidObjectId(rideId)) {
+      return next(createError(400, ERROR.INVALID_DATA));
+    }
+
+    const userId = req.user?._id;
+    const user = req.user;
+    const ride = await Ride.findOne({ _id: rideId }).exec();
+
+    if (!ride) {
+      return next(createError(400, ERROR.INVALID_RIDE));
+    }
+
+    const oldChatRoom = await ChatRoom.findOne({
+      ride: ride._id,
+      passenger: userId,
+    });
+
+    const joinRoom = () => {
+      const io: Server = req.app.get('io');
+
+      io.on('connection', (socket: Socket) => {
+        console.log('connected');
+
+        socket.on('join-room', async (roomid) => {
+          console.log('room joined');
+          await socket.join(roomid);
+
+          socket.on('chat', (chat: string) => {
+            console.log('chat', chat);
+          });
+
+          io.to(roomid).emit('hello', 'world');
+
+          socket.on('disconnect', () => {
+            console.log('disconnect');
+          });
+        });
+      });
+    };
+
+    if (oldChatRoom) {
+      joinRoom();
+
+      return res
+        .status(200)
+        .json({ result: 'success', roomId: oldChatRoom._id });
+    } else {
+      const chatRoom = new ChatRoom({
+        ride: rideId,
+        passenger: userId,
+        status: false,
+        chat: [],
+      });
+
+      const chatRoomId = chatRoom._id;
+
+      ride.chatRooms = [...ride.chatRooms, chatRoom._id];
+
+      // TODO 2021/10/13 cw: PromiseAll로 리팩토링
+      await chatRoom.save();
+      await ride.save();
+
+      joinRoom();
+
+      return res.status(200).json({ result: 'success', roomId: chatRoomId });
+    }
+
+    // io.of(`/${rideId}`).emit('dm', chatWithSender);
   } catch (err) {
-    console.log('err here', err);
+    if (err instanceof mongoose.Error.ValidationError) {
+      next(createError(400, ERROR.INVALID_DATA));
+    }
 
     next(err);
   }
 };
 
-export const postChats: RequestHandler = async (req, res, next) => {
-  try {
-    const ride = await Ride.findOne({ _id: req.params.rideId });
-
-    if (!ride) {
-      return res.status(404).send('존재하지 않는 ride입니다.');
-    }
-
-    const senderId = req.user?.id;
-
-    const sender = await User.findOne({ _id: senderId });
-
-    console.log('req.body', req.body);
-
-    const chat = new Chat({
-      sender: senderId,
-      senderNickname: sender!.nickname,
-      senderProfilePicture: sender!.profilePicture,
-      contents: req.body.contents,
-    });
-
-    await chat.save();
-
-    ride.chats = [...ride.chats, chat._id];
-
-    await ride.save();
-
-    const chatWithSender = await Chat.findOne({
-      sender: senderId,
-    });
-
-    const rideId = ride._id as string;
-
-    const io = req.app.get('io');
-
-    io.of(`/${rideId}`).emit('dm', chatWithSender);
-
-    // io.of(`/${ride._id}`).to(ride._id).emit('dm', chatWithSender);
-
-    return res.send('ok');
-  } catch (err) {
-    console.log('err here', err);
-
-    next(err);
-  }
-};
+//
+// export const getChats: RequestHandler = async (req, res, next) => {
+//   try {
+//     const ride = await Ride.findOne({ _id: req.params.rideId });
+//
+//     if (!ride) {
+//       return res.status(404).send('존재하지 않는 ride입니다.');
+//     }
+//
+//     await Ride.populate(ride, 'chats');
+//
+//     const chats = ride.chats;
+//
+//     return res.status(200).json({ result: 'success', chats });
+//   } catch (err) {
+//     console.log('err here', err);
+//
+//     next(err);
+//   }
+// };
+//
+// export const postChats: RequestHandler = async (req, res, next) => {
+//   try {
+//     const ride = await Ride.findOne({ _id: req.params.rideId });
+//
+//     if (!ride) {
+//       return res.status(404).send('존재하지 않는 ride입니다.');
+//     }
+//
+//     const senderId = req.user?.id;
+//
+//     const sender = await User.findOne({ _id: senderId });
+//
+//     console.log('req.body', req.body);
+//
+//     const chat = new Chat({
+//       sender: senderId,
+//       senderNickname: sender!.nickname,
+//       senderProfilePicture: sender!.profilePicture,
+//       contents: req.body.contents,
+//     });
+//
+//     await chat.save();
+//
+//     ride.chats = [...ride.chats, chat._id];
+//
+//     await ride.save();
+//
+//     const chatWithSender = await Chat.findOne({
+//       sender: senderId,
+//     });
+//
+//     const rideId = ride._id as string;
+//
+//     const io = req.app.get('io');
+//
+//     io.of(`/${rideId}`).emit('dm', chatWithSender);
+//
+//     // io.of(`/${ride._id}`).to(ride._id).emit('dm', chatWithSender);
+//
+//     return res.send('ok');
+//   } catch (err) {
+//     console.log('err here', err);
+//
+//     next(err);
+//   }
+// };

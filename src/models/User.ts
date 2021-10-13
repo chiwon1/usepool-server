@@ -2,8 +2,7 @@ import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import createError from 'http-errors';
 import ERROR from '../constants/error';
-import { IDecoded } from '../types';
-import { IUserDocument, IUserModel } from '../types/User';
+import { IDecoded, IUserDocument, IUserModel } from '../types/User';
 
 const userSchema = new mongoose.Schema({
   kakaoId: {

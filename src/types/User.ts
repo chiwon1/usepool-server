@@ -18,3 +18,11 @@ export interface IUserDocument extends IUser, Document {
 export interface IUserModel extends Model<IUserDocument> {
   findByToken: (token: string) => Promise<IUserDocument>;
 }
+
+export interface IDecoded {
+  kakaoId: number;
+  nickname: string;
+  profilePicture: string;
+  iat: number;
+  exp: number;
+}
