@@ -23,12 +23,6 @@ const rideSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    isFullyBooked: {
-      type: Boolean,
-    },
-    distance: {
-      type: String,
-    },
     driver: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -42,11 +36,11 @@ const rideSchema = new mongoose.Schema(
         },
       ],
     },
-    chats: {
+    chatRooms: {
       type: [
         {
           type: mongoose.Schema.Types.ObjectId,
-          ref: 'Chat',
+          ref: 'ChatRoom',
         },
       ],
     },

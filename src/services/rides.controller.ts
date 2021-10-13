@@ -131,15 +131,15 @@ export const book: RequestHandler = async (req, res, next) => {
       return next(createError(400, ERROR.INVALID_RIDE));
     }
 
-    targetRide.passengers = [...targetRide.passengers, userId!];
+    targetRide.passengers = [...targetRide.passengers, userId];
 
     await targetRide.save();
 
     const targetUser = req.user;
 
-    targetUser!.ridesAsPassenger = [...targetUser!.ridesAsPassenger, rideId];
+    targetUser.ridesAsPassenger = [...targetUser.ridesAsPassenger, rideId];
 
-    await targetUser!.save();
+    await targetUser.save();
 
     return res.status(200).json({ result: 'success' });
   } catch (err) {

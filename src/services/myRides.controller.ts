@@ -8,7 +8,7 @@ export const asDriver: RequestHandler = async (req, res, next) => {
   try {
     const user = req.user;
 
-    const rides = await Ride.find({ driver: user!._id });
+    const rides = await Ride.find({ driver: user._id });
 
     await Ride.populate(rides, 'driver');
 
@@ -28,7 +28,7 @@ export const asPassenger: RequestHandler = async (req, res, next) => {
 
     const ridesAsPassenger = user?.ridesAsPassenger;
 
-    const rides = await Ride.find().where('_id').in(ridesAsPassenger!).exec();
+    const rides = await Ride.find().where('_id').in(ridesAsPassenger).exec();
 
     await Ride.populate(rides, 'driver');
 
