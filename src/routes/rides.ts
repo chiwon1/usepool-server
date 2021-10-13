@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   book,
+  newChatRoom,
   details,
   joinChat,
   // getChats,
@@ -15,7 +16,7 @@ router.post('/new', newRide);
 router.get('/search', searchQueryValidator, searchRides);
 router.get('/:id', details);
 router.post('/:id', book);
-router.post('/:id/joinChat', joinChat);
+router.post('/:id/newChatRoom', newChatRoom);
 // router.get('/:rideId/chats/:userId', getChats);
 // router.post('/:rideId/chats/:userId', postChats);
 

@@ -149,6 +149,61 @@ export const book: RequestHandler = async (req, res, next) => {
   }
 };
 
+export const newChatRoom: RequestHandler = async (req, res, next) => {
+  try {
+    if (!req.body) {
+      throw createError(400, ERROR.INVALID_DATA);
+    }
+
+    const userId = req.user?._id;
+    const user = req.user;
+    const { id: rideId } = req.params;
+
+    if (!mongoose.isValidObjectId(rideId)) {
+      return next(createError(400, ERROR.INVALID_DATA));
+    }
+
+    const ride = await Ride.findOne({ _id: rideId }).exec();
+
+    if (!ride) {
+      return next(createError(400, ERROR.INVALID_RIDE));
+    }
+
+    const chatRoom = await ChatRoom.findOne({
+      ride: ride._id,
+      passenger: userId,
+    });
+
+    if (chatRoom) {
+      return res.status(200).json({ result: 'success', roomId: chatRoom._id });
+    } else {
+      const newChatRoom = new ChatRoom({
+        ride: rideId,
+        driver: ride.driver,
+        passenger: userId,
+        status: false,
+        chat: [],
+      });
+
+      ride.chatRooms = [...ride.chatRooms, newChatRoom._id];
+
+      // TODO 2021/10/13 cw: PromiseAll로 리팩토링
+      await newChatRoom.save();
+      await ride.save();
+
+      return res
+        .status(200)
+        .json({ result: 'success', roomId: newChatRoom._id });
+    }
+  } catch (err) {
+    if (err instanceof mongoose.Error.ValidationError) {
+      next(createError(400, ERROR.INVALID_DATA));
+    }
+
+    next(err);
+  }
+};
+
 export const joinChat: RequestHandler = async (req, res, next) => {
   try {
     if (!req.params) {
