@@ -268,7 +268,7 @@ export const joinChat: RequestHandler = async (req, res, next) => {
         driver: ride.driver,
         passenger: userId,
         status: false,
-        chat: [],
+        chatList: [],
       });
 
       const chatRoomId = chatRoom._id;

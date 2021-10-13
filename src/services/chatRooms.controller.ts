@@ -48,32 +48,56 @@ export const join: RequestHandler = (req, res, next) => {
       next(createError(400, ERROR.INVALID_USER));
     }
 
+    if (!mongoose.isValidObjectId(chatRoomId)) {
+      next(createError(400, ERROR.INVALID_CHAT_ROOM));
+    }
+
     const joinRoom = () => {
       const io: Server = req.app.get('io');
 
       io.on('connection', (socket: Socket) => {
         console.log('connected');
 
-        socket.on('join-room', async (roomid) => {
-          console.log('room joined');
-          await socket.join(roomid);
-
-          socket.on('chat', (chat: string) => {
-            console.log('chat', chat);
-          });
-
-          io.to(roomid).emit('hello', 'world');
-
-          socket.on('disconnect', () => {
-            console.log('disconnect');
-          });
+        socket.on('join-room', (roomid) => {
+          void socket.join(roomid);
         });
       });
     };
 
     joinRoom();
 
-    res.status(200).json({ result: 'success', roomId: chatRoomId });
+    res.status(200).json({ result: 'success' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const chatList: RequestHandler = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const { id: chatRoomId } = req.params;
+
+    if (!chatRoomId) {
+      throw createError(400, ERROR.INVALID_DATA);
+    }
+
+    if (!mongoose.isValidObjectId(userId)) {
+      next(createError(400, ERROR.INVALID_USER));
+    }
+
+    if (!mongoose.isValidObjectId(chatRoomId)) {
+      next(createError(400, ERROR.INVALID_CHAT_ROOM));
+    }
+
+    const chatRoom = await ChatRoom.findOne({ _id: chatRoomId }).exec();
+
+    if (!chatRoom) {
+      throw createError(400, ERROR.INVALID_DATA);
+    }
+
+    await ChatRoom.populate(chatRoom, 'chats');
+
+    res.status(200).json({ result: 'success', chatList: chatRoom.chatList });
   } catch (err) {
     next(err);
   }

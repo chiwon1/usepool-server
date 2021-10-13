@@ -22,7 +22,7 @@ const chatRoomSchema = new mongoose.Schema(
       type: Boolean,
       required: true,
     },
-    chats: {
+    chatList: {
       type: [
         {
           type: mongoose.Schema.Types.ObjectId,

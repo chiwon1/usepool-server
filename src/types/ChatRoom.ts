@@ -5,7 +5,7 @@ export interface IChatRoom {
   ride: mongoose.Schema.Types.ObjectId;
   passenger: mongoose.Schema.Types.ObjectId;
   status: boolean;
-  chats: mongoose.Schema.Types.ObjectId[];
+  chatList: mongoose.Schema.Types.ObjectId[];
 }
 
 export interface IChatRoomModel extends IChatRoom, Document {}

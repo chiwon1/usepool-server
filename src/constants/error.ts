@@ -13,6 +13,7 @@ const ERROR = {
   INVALID_TOKEN: 'Invalid token',
   INVALID_DRIVER: 'Invalid driver',
   INVALID_DRIVER_NICKNAME: 'Invalid driver nickname',
+  INVALID_CHAT_ROOM: 'Invalid chat room',
 };
 
 export default ERROR;
