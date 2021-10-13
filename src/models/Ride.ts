@@ -34,15 +34,19 @@ const rideSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
-    driverNickname: {
-      type: String,
-      required: true,
-    },
     passengers: {
       type: [
         {
           type: mongoose.Schema.Types.ObjectId,
           ref: 'User',
+        },
+      ],
+    },
+    chats: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Chat',
         },
       ],
     },

@@ -7,6 +7,8 @@
 import app from '../app';
 import debug from 'debug';
 import http from 'http';
+import webSocket from '../socket';
+import { Server } from 'socket.io';
 
 /**
  * Get port from environment and store in Express.
@@ -74,6 +76,8 @@ const onError = (error: { syscall: string; code: string }) => {
 
 server.listen(port);
 server.on('error', onError);
+
+webSocket(server, app);
 
 /**
  * Event listener for HTTP server "listening" event.

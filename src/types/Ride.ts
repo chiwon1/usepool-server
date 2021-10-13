@@ -1,4 +1,5 @@
 import mongoose, { Document } from 'mongoose';
+import { IChatModel } from './Chat';
 
 export interface IRide {
   departFrom: string;
@@ -9,8 +10,8 @@ export interface IRide {
   isFullyBooked?: boolean;
   distance?: string;
   driver: mongoose.Schema.Types.ObjectId;
-  driverNickname: string;
   passengers: mongoose.Schema.Types.ObjectId[];
+  chats: mongoose.Schema.Types.ObjectId[];
 }
 
 export interface IRideModel extends IRide, Document {}

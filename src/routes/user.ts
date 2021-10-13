@@ -4,9 +4,11 @@ const router = express.Router();
 
 router.get('/', (req, res, next) => {
   try {
-    const { kakaoId, nickname, profilePicture } = req.user as IUserDocument;
+    const { _id, kakaoId, nickname, profilePicture } =
+      req.user as IUserDocument;
 
     const userInfo = {
+      userId: _id,
       kakaoId,
       nickname,
       profilePicture,

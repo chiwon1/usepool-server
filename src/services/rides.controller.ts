@@ -4,6 +4,8 @@ import ERROR from '../constants/error';
 import mongoose from 'mongoose';
 import { IRide } from '../types/Ride';
 import Ride from '../models/Ride';
+import User from '../models/User';
+import Chat from '../models/Chat';
 
 export const newRide: RequestHandler = async (req, res, next) => {
   try {
@@ -11,14 +13,8 @@ export const newRide: RequestHandler = async (req, res, next) => {
       return;
     }
 
-    const {
-      departFrom,
-      departDate,
-      departTime,
-      arriveAt,
-      seatCapacity,
-      driverNickname,
-    } = req.body as IRide;
+    const { departFrom, departDate, departTime, arriveAt, seatCapacity } =
+      req.body as IRide;
 
     // TODO 2021/10/08 cw: validatorion 로직 middleware로 빼기
     if (!departFrom) {
@@ -33,10 +29,6 @@ export const newRide: RequestHandler = async (req, res, next) => {
       throw createError(400, ERROR.INVALID_ARRIVE_LOCATION);
     }
 
-    if (!driverNickname) {
-      throw createError(400, ERROR.INVALID_DRIVER_NICKNAME);
-    }
-
     if (!seatCapacity) {
       throw createError(400, ERROR.INVALID_CAPACITY);
     }
@@ -47,7 +39,6 @@ export const newRide: RequestHandler = async (req, res, next) => {
       departTime,
       arriveAt,
       seatCapacity,
-      driverNickname,
       driver: req?.user?._id,
     });
 
@@ -103,11 +94,9 @@ export const details: RequestHandler = async (req, res, next) => {
 
     const details = await Ride.findOne({ _id }).exec();
 
-    const populatedDetails = await Ride.populate(details, 'driver');
+    await Ride.populate(details, 'driver');
 
-    return res
-      .status(200)
-      .json({ result: 'success', details: populatedDetails });
+    return res.status(200).json({ result: 'success', details });
   } catch (err) {
     if (err instanceof mongoose.Error.ValidationError) {
       next(createError(400, ERROR.INVALID_DATA));
@@ -136,8 +125,6 @@ export const book: RequestHandler = async (req, res, next) => {
     const rideId = _id as unknown as mongoose.Schema.Types.ObjectId;
     const userId = req.user?._id;
 
-    console.log('req.user', req.user);
-
     const targetRide = await Ride.findOne({ rideId }).exec();
 
     if (!targetRide) {
@@ -159,6 +146,73 @@ export const book: RequestHandler = async (req, res, next) => {
     if (err instanceof mongoose.Error.ValidationError) {
       next(createError(400, ERROR.INVALID_DATA));
     }
+
+    next(err);
+  }
+};
+
+export const getChats: RequestHandler = async (req, res, next) => {
+  try {
+    const ride = await Ride.findOne({ _id: req.params.rideId });
+
+    if (!ride) {
+      return res.status(404).send('존재하지 않는 ride입니다.');
+    }
+
+    await Ride.populate(ride, 'chats');
+
+    const chats = ride.chats;
+
+    return res.status(200).json({ result: 'success', chats });
+  } catch (err) {
+    console.log('err here', err);
+
+    next(err);
+  }
+};
+
+export const postChats: RequestHandler = async (req, res, next) => {
+  try {
+    const ride = await Ride.findOne({ _id: req.params.rideId });
+
+    if (!ride) {
+      return res.status(404).send('존재하지 않는 ride입니다.');
+    }
+
+    const senderId = req.user?.id;
+
+    const sender = await User.findOne({ _id: senderId });
+
+    console.log('req.body', req.body);
+
+    const chat = new Chat({
+      sender: senderId,
+      senderNickname: sender!.nickname,
+      senderProfilePicture: sender!.profilePicture,
+      contents: req.body.contents,
+    });
+
+    await chat.save();
+
+    ride.chats = [...ride.chats, chat._id];
+
+    await ride.save();
+
+    const chatWithSender = await Chat.findOne({
+      sender: senderId,
+    });
+
+    const rideId = ride._id as string;
+
+    const io = req.app.get('io');
+
+    io.of(`/${rideId}`).emit('dm', chatWithSender);
+
+    // io.of(`/${ride._id}`).to(ride._id).emit('dm', chatWithSender);
+
+    return res.send('ok');
+  } catch (err) {
+    console.log('err here', err);
 
     next(err);
   }
