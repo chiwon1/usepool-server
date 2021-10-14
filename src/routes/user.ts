@@ -10,12 +10,11 @@ router.get('/', (req, res, next) => {
 
     const userInfo = {
       userId: _id,
-      kakaoId,
       nickname,
       profilePicture,
     };
 
-    res.status(200).json(userInfo);
+    res.status(200).json({ result: 'success', userInfo });
   } catch (err) {
     next(err);
   }

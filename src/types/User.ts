@@ -6,6 +6,7 @@ export interface IUser {
   profilePicture?: string;
   ridesAsPassenger: mongoose.Schema.Types.ObjectId[];
   token?: string;
+  kakaoToken: string;
 }
 
 export interface IUserDocument extends IUser, Document {

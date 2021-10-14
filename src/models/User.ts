@@ -26,6 +26,7 @@ const userSchema = new mongoose.Schema({
     ],
   },
   token: String,
+  kakaoToken: String,
 });
 
 userSchema.methods.generateToken = async function (

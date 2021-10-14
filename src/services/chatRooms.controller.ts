@@ -27,8 +27,6 @@ export const list: RequestHandler = async (req, res, next) => {
 
     const chatRoomList = [...listAsPassenger, ...listAsDriver];
 
-    console.log('chatRoomList', chatRoomList);
-
     res.status(200).json({ result: 'success', chatRoomList });
   } catch (err) {
     next(err);

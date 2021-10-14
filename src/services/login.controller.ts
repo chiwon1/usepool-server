@@ -4,13 +4,14 @@ import ERROR from '../constants/error';
 import User from '../models/User';
 import mongoose from 'mongoose';
 import axios from 'axios';
-import { IKakaoInfo } from '../types/Kakao';
 
 export const login: RequestHandler = async (req, res, next) => {
   try {
     const { authCode } = req.query;
 
-    const kakaoResponse = await axios({
+    const {
+      data: { access_token },
+    } = (await axios({
       method: 'post',
       url: `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${process
         .env.KAKAO_CLIENT_ID!}&redirect_uri=${process.env
@@ -18,25 +19,26 @@ export const login: RequestHandler = async (req, res, next) => {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
       },
-    });
+    })) as any;
 
-    const { access_token } = kakaoResponse.data;
-
-    const { data } = await axios({
+    const {
+      data: {
+        id,
+        properties: { nickname, profile_image },
+      },
+    } = (await axios({
       method: 'get',
       url: 'https://kapi.kakao.com/v2/user/me',
       headers: {
         Authorization: `Bearer ${String(access_token)}`,
         'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
       },
-    });
+    })) as any;
 
-    const { id, properties } = data as unknown as IKakaoInfo;
-
-    const userInfo = {
+    const kakaoUserInfo = {
       kakaoId: id,
-      nickname: properties.nickname,
-      profilePicture: properties?.profile_image,
+      nickname: nickname,
+      profilePicture: profile_image,
     };
 
     const hasLoggedin = await User.exists({
@@ -45,17 +47,27 @@ export const login: RequestHandler = async (req, res, next) => {
 
     if (!hasLoggedin) {
       await User.create({
-        ...userInfo,
+        ...kakaoUserInfo,
+        kakaoToken: access_token,
       });
     }
 
-    const user = await User.findOne({ kakaoId: id });
+    const user = await User.findOneAndUpdate(
+      { kakaoId: id },
+      { kakaoToken: access_token },
+    ).exec();
 
     if (!user) {
       throw createError(400, ERROR.INVALID_USER);
     }
 
-    await user.generateToken(userInfo);
+    await user.generateToken(kakaoUserInfo);
+
+    const userInfo = {
+      userId: user.id,
+      nickname: user.nickname,
+      profilePicture: user.profilePicture,
+    };
 
     res
       .status(200)

@@ -7,7 +7,6 @@ import ERROR from '../constants/error';
 
 export const newChat: RequestHandler = async (req, res, next) => {
   try {
-    console.log('incoming');
     const senderId = req.user._id;
     const { id: chatRoomId } = req.params;
     const sender = await User.findOne({ _id: senderId });
@@ -37,7 +36,6 @@ export const newChat: RequestHandler = async (req, res, next) => {
 
     res.status(200).json({ result: 'success' });
   } catch (err) {
-    console.log('err', err);
     next(err);
   }
 };
