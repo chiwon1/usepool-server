@@ -71,7 +71,7 @@ export const login: RequestHandler = async (req, res, next) => {
 
     res
       .status(200)
-      .cookie('x_auth', user.token)
+      .cookie('x_auth', user.token, { secure: true, sameSite: 'none' })
       .json({ result: 'success', userInfo });
   } catch (err) {
     if (err instanceof mongoose.Error.ValidationError) {
