@@ -69,10 +69,7 @@ export const login: RequestHandler = async (req, res, next) => {
       profilePicture: user.profilePicture,
     };
 
-    res
-      .status(200)
-      .cookie('x_auth', user.token, { secure: true, sameSite: 'none' })
-      .json({ result: 'success', userInfo });
+    res.status(200).json({ result: 'success', userInfo, token: user.token });
   } catch (err) {
     if (err instanceof mongoose.Error.ValidationError) {
       next(createError(400, ERROR.INVALID_DATA));
