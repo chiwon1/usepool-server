@@ -11,6 +11,12 @@ const webSocket = (server: http.Server, app: Express) => {
   });
 
   app.set('io', io);
+
+  io.on('connection', (socket: Socket) => {
+    socket.on('join-room', async (roomid) => {
+      await socket.join(roomid);
+    });
+  });
 };
 
 export default webSocket;

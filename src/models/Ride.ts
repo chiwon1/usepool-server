@@ -19,10 +19,6 @@ const rideSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    seatCapacity: {
-      type: Number,
-      required: true,
-    },
     driver: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

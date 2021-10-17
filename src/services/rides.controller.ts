@@ -4,10 +4,7 @@ import ERROR from '../constants/error';
 import mongoose from 'mongoose';
 import { IRide } from '../types/Ride';
 import Ride from '../models/Ride';
-import User from '../models/User';
-import Chat from '../models/Chat';
 import ChatRoom from '../models/ChatRoom';
-import { Server, Socket } from 'socket.io';
 
 export const newRide: RequestHandler = async (req, res, next) => {
   try {
@@ -15,8 +12,7 @@ export const newRide: RequestHandler = async (req, res, next) => {
       return;
     }
 
-    const { departFrom, departDate, departTime, arriveAt, seatCapacity } =
-      req.body as IRide;
+    const { departFrom, departDate, departTime, arriveAt } = req.body as IRide;
 
     // TODO 2021/10/08 cw: validatorion 로직 middleware로 빼기
     if (!departFrom) {
@@ -31,16 +27,11 @@ export const newRide: RequestHandler = async (req, res, next) => {
       throw createError(400, ERROR.INVALID_ARRIVE_LOCATION);
     }
 
-    if (!seatCapacity) {
-      throw createError(400, ERROR.INVALID_CAPACITY);
-    }
-
     await Ride.create({
       departFrom,
       departDate,
       departTime,
       arriveAt,
-      seatCapacity,
       driver: req?.user?._id,
     });
 
