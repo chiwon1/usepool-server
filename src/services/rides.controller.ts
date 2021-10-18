@@ -12,10 +12,19 @@ export const newRide: RequestHandler = async (req, res, next) => {
       return;
     }
 
-    const { departFrom, departDate, departTime, arriveAt } = req.body as IRide;
+    const {
+      departLocation,
+      departAddress,
+      departCoordinate,
+      departDate,
+      departTime,
+      destination,
+      destinationAddress,
+      destinationCoordinate,
+    } = req.body as IRide;
 
     // TODO 2021/10/08 cw: validatorion 로직 middleware로 빼기
-    if (!departFrom) {
+    if (!departLocation) {
       throw createError(400, ERROR.INVALID_DEPART_LOCATION);
     }
 
@@ -23,15 +32,19 @@ export const newRide: RequestHandler = async (req, res, next) => {
       throw createError(400, ERROR.INVALID_DEPART_TIME);
     }
 
-    if (!arriveAt) {
+    if (!destination) {
       throw createError(400, ERROR.INVALID_ARRIVE_LOCATION);
     }
 
     await Ride.create({
-      departFrom,
+      departLocation,
+      departAddress,
+      departCoordinate,
       departDate,
       departTime,
-      arriveAt,
+      destination,
+      destinationAddress,
+      destinationCoordinate,
       driver: req?.user?._id,
     });
 

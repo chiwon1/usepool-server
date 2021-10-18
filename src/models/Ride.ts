@@ -3,10 +3,12 @@ import { IRideModel } from '../types/Ride';
 
 const rideSchema = new mongoose.Schema(
   {
-    departFrom: {
+    departLocation: {
       type: String,
       required: true,
     },
+    departAddress: String,
+    departCoordinate: [Number],
     departDate: {
       type: String,
       required: true,
@@ -15,10 +17,12 @@ const rideSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    arriveAt: {
+    destination: {
       type: String,
       required: true,
     },
+    destinationAddress: String,
+    destinationCoordinate: [Number],
     driver: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
