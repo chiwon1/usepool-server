@@ -2,36 +2,51 @@ import { RequestHandler } from 'express';
 import createError from 'http-errors';
 import ERROR from '../constants/error';
 import mongoose from 'mongoose';
-import { IRide } from '../types/Ride';
+import { IRide, IRideModel } from '../types/Ride';
 import Ride from '../models/Ride';
 import ChatRoom from '../models/ChatRoom';
+import { calculateDistance } from '../utils/distance';
 
 export const newRide: RequestHandler = async (req, res, next) => {
   try {
+    console.log('!req.body', req.body);
     if (!req.body) {
       return;
     }
 
-    const { departFrom, departDate, departTime, arriveAt } = req.body as IRide;
+    const {
+      departureLocation,
+      departureAddress,
+      departureCoordinate,
+      departureDate,
+      departureTime,
+      destination,
+      destinationAddress,
+      destinationCoordinate,
+    } = req.body as IRide;
 
     // TODO 2021/10/08 cw: validatorion 로직 middleware로 빼기
-    if (!departFrom) {
+    if (!departureLocation) {
       throw createError(400, ERROR.INVALID_DEPART_LOCATION);
     }
 
-    if (!departTime) {
+    if (!departureTime) {
       throw createError(400, ERROR.INVALID_DEPART_TIME);
     }
 
-    if (!arriveAt) {
+    if (!destination) {
       throw createError(400, ERROR.INVALID_ARRIVE_LOCATION);
     }
 
     await Ride.create({
-      departFrom,
-      departDate,
-      departTime,
-      arriveAt,
+      departureLocation,
+      departureAddress,
+      departureCoordinate,
+      departureDate,
+      departureTime,
+      destination,
+      destinationAddress,
+      destinationCoordinate,
       driver: req?.user?._id,
     });
 
@@ -47,19 +62,45 @@ export const newRide: RequestHandler = async (req, res, next) => {
 
 export const searchRides: RequestHandler = async (req, res, next) => {
   try {
-    const { departFrom, arriveAt, departDate } = req.query;
+    console.log('req.query', req.query);
 
-    const searchResult = await Ride.find({
-      departFrom: departFrom as string,
-      arriveAt: arriveAt as string,
-      departDate: departDate as string,
+    const { departureCoordinate, departureDate, destinationCoordinate } =
+      req.query;
+
+    const ridesOnDate = await Ride.find({
+      departureDate: departureDate as string,
     }).exec();
 
-    const populatedResult = await Ride.populate(searchResult, 'driver');
+    await Ride.populate(ridesOnDate, 'driver');
+
+    const adjacentRide: IRideModel[] = [];
+
+    const userDepartureCoordinate = departureCoordinate as string[];
+    const userDestinationCoordinate = destinationCoordinate as string[];
+
+    ridesOnDate.forEach((ride) => {
+      const departureDistance = calculateDistance(
+        userDepartureCoordinate,
+        ride.departureCoordinate,
+      );
+
+      if (departureDistance > 5) {
+        return;
+      }
+
+      const destinationDistance = calculateDistance(
+        userDestinationCoordinate,
+        ride.destinationCoordinate,
+      );
+
+      if (destinationDistance <= 5) {
+        adjacentRide.push(ride);
+      }
+    });
 
     return res
       .status(200)
-      .json({ result: 'success', searchResult: populatedResult });
+      .json({ result: 'success', searchResult: adjacentRide });
   } catch (err) {
     if (err instanceof mongoose.Error.ValidationError) {
       next(createError(400, ERROR.INVALID_DATA));
