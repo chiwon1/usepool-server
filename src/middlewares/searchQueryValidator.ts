@@ -8,18 +8,19 @@ export const searchQueryValidator: RequestHandler = (req, res, next) => {
       throw createError(400, ERROR.INVALID_DATA);
     }
 
-    const { departFrom, arriveAt, departDate } = req.query;
+    const { departureCoordinate, departureDate, destinationCoordinate } =
+      req.query;
 
-    if (!departFrom) {
+    if (!departureCoordinate) {
       throw createError(400, ERROR.INVALID_DEPART_LOCATION);
     }
 
-    if (!arriveAt) {
-      throw createError(400, ERROR.INVALID_ARRIVE_LOCATION);
+    if (!departureDate) {
+      throw createError(400, ERROR.INVALID_DEPART_DATE);
     }
 
-    if (!departDate) {
-      throw createError(400, ERROR.INVALID_DEPART_DATE);
+    if (!destinationCoordinate) {
+      throw createError(400, ERROR.INVALID_ARRIVE_LOCATION);
     }
 
     next();

@@ -1,11 +1,11 @@
 import mongoose, { Document } from 'mongoose';
 
 export interface IRide {
-  departLocation: string;
-  departAddress: string;
-  departCoordinate: number[];
-  departDate: string;
-  departTime: string;
+  departureLocation: string;
+  departureAddress: string;
+  departureCoordinate: number[];
+  departureDate: string;
+  departureTime: string;
   destination: string;
   destinationAddress: string;
   destinationCoordinate: number[];

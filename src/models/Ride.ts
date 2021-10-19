@@ -1,19 +1,22 @@
 import mongoose from 'mongoose';
-import { IRideModel } from '../types/Ride';
+import { IRide, IRideModel } from '../types/Ride';
 
 const rideSchema = new mongoose.Schema(
   {
-    departLocation: {
+    departureLocation: {
       type: String,
       required: true,
     },
-    departAddress: String,
-    departCoordinate: [Number],
-    departDate: {
+    departureAddress: {
       type: String,
       required: true,
     },
-    departTime: {
+    departureCoordinate: { type: [Number], required: true },
+    departureDate: {
+      type: String,
+      required: true,
+    },
+    departureTime: {
       type: String,
       required: true,
     },
@@ -21,8 +24,11 @@ const rideSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    destinationAddress: String,
-    destinationCoordinate: [Number],
+    destinationAddress: {
+      type: String,
+      required: true,
+    },
+    destinationCoordinate: { type: [Number], required: true },
     driver: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
