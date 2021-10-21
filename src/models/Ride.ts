@@ -11,7 +11,13 @@ const rideSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    departureCoordinate: { type: [Number], required: true },
+    departureCoordinate: {
+      type: {
+        lat: Number,
+        lng: Number,
+      },
+      required: true,
+    },
     departureDate: {
       type: String,
       required: true,
@@ -28,7 +34,13 @@ const rideSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    destinationCoordinate: { type: [Number], required: true },
+    destinationCoordinate: {
+      type: {
+        lat: Number,
+        lng: Number,
+      },
+      required: true,
+    },
     driver: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

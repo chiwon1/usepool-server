@@ -1,4 +1,13 @@
-export interface IKakaoInfo {
+export interface IKakaoAuth {
+  access_token: string;
+  token_type: 'bearer';
+  refresh_token: string;
+  expires_in: number;
+  scope: string;
+  refresh_token_expires_in: number;
+}
+
+export interface IKakaoUserInfo {
   id: number;
   connected_at: string;
   properties: {

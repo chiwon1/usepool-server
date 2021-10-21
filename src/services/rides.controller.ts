@@ -2,14 +2,13 @@ import { RequestHandler } from 'express';
 import createError from 'http-errors';
 import ERROR from '../constants/error';
 import mongoose from 'mongoose';
-import { IRide, IRideModel } from '../types/Ride';
+import { ICoordinate, IRide, IRideModel } from '../types/Ride';
 import Ride from '../models/Ride';
 import ChatRoom from '../models/ChatRoom';
 import { calculateDistance } from '../utils/distance';
 
 export const newRide: RequestHandler = async (req, res, next) => {
   try {
-    console.log('!req.body', req.body);
     if (!req.body) {
       return;
     }
@@ -62,10 +61,17 @@ export const newRide: RequestHandler = async (req, res, next) => {
 
 export const searchRides: RequestHandler = async (req, res, next) => {
   try {
-    console.log('req.query', req.query);
-
-    const { departureCoordinate, departureDate, destinationCoordinate } =
+    const { departureCoordinate, destinationCoordinate, departureDate } =
       req.query;
+
+    // TODO 2021/10/20 cw: validation 미들웨어로 빼기
+    if (!Array.isArray(departureCoordinate)) {
+      throw createError(400, ERROR.INVALID_DEPARTURE_COORDINATE);
+    }
+
+    if (!Array.isArray(destinationCoordinate)) {
+      throw createError(400, ERROR.INVALID_DESTINATION_COORDINATE);
+    }
 
     const ridesOnDate = await Ride.find({
       departureDate: departureDate as string,
@@ -75,8 +81,15 @@ export const searchRides: RequestHandler = async (req, res, next) => {
 
     const adjacentRide: IRideModel[] = [];
 
-    const userDepartureCoordinate = departureCoordinate as string[];
-    const userDestinationCoordinate = destinationCoordinate as string[];
+    const userDepartureCoordinate: ICoordinate = {
+      lat: Number(departureCoordinate[0]),
+      lng: Number(departureCoordinate[1]),
+    };
+
+    const userDestinationCoordinate: ICoordinate = {
+      lat: Number(destinationCoordinate[0]),
+      lng: Number(destinationCoordinate[1]),
+    };
 
     ridesOnDate.forEach((ride) => {
       const departureDistance = calculateDistance(
