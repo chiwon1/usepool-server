@@ -14,6 +14,8 @@ const ERROR = {
   INVALID_DRIVER: 'Invalid driver',
   INVALID_DRIVER_NICKNAME: 'Invalid driver nickname',
   INVALID_CHAT_ROOM: 'Invalid chat room',
+  INVALID_DEPARTURE_COORDINATE: 'Invalid departure coordinate',
+  INVALID_DESTINATION_COORDINATE: 'Invalid destination coordinate',
 };
 
 export default ERROR;

@@ -1,22 +1,44 @@
 import mongoose from 'mongoose';
-import { IRideModel } from '../types/Ride';
+import { IRide, IRideModel } from '../types/Ride';
 
 const rideSchema = new mongoose.Schema(
   {
-    departFrom: {
+    departureLocation: {
       type: String,
       required: true,
     },
-    departDate: {
+    departureAddress: {
       type: String,
       required: true,
     },
-    departTime: {
+    departureCoordinate: {
+      type: {
+        lat: Number,
+        lng: Number,
+      },
+      required: true,
+    },
+    departureDate: {
       type: String,
       required: true,
     },
-    arriveAt: {
+    departureTime: {
       type: String,
+      required: true,
+    },
+    destination: {
+      type: String,
+      required: true,
+    },
+    destinationAddress: {
+      type: String,
+      required: true,
+    },
+    destinationCoordinate: {
+      type: {
+        lat: Number,
+        lng: Number,
+      },
       required: true,
     },
     driver: {

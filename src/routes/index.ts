@@ -6,8 +6,8 @@ import logout from './logout';
 import rides from './rides';
 import myRides from './myRides';
 import auth from '../middlewares/auth';
-import chatRooms from './chatRoom';
-import chats from './chat';
+import chatRooms from './chatRooms';
+import chats from './chats';
 
 const router = express.Router();
 
