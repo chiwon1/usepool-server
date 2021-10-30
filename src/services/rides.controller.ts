@@ -24,7 +24,6 @@ export const newRide: RequestHandler = async (req, res, next) => {
       destinationCoordinate,
     } = req.body as IRide;
 
-    // TODO 2021/10/08 cw: validatorion 로직 middleware로 빼기
     if (!departureLocation) {
       throw createError(400, ERROR.INVALID_DEPART_LOCATION);
     }
@@ -64,7 +63,6 @@ export const searchRides: RequestHandler = async (req, res, next) => {
     const { departureCoordinate, destinationCoordinate, departureDate } =
       req.query;
 
-    // TODO 2021/10/20 cw: validation 미들웨어로 빼기
     if (!Array.isArray(departureCoordinate)) {
       throw createError(400, ERROR.INVALID_DEPARTURE_COORDINATE);
     }
@@ -180,7 +178,6 @@ export const book: RequestHandler = async (req, res, next) => {
     targetRide.passengers = [...targetRide.passengers, userId];
     targetUser.ridesAsPassenger = [...targetUser.ridesAsPassenger, rideId];
 
-    // TODO 2021/10/13 cw: PromiseAll로 리팩토링
     await targetRide.save();
     await targetUser.save();
 
@@ -232,7 +229,6 @@ export const newChatRoom: RequestHandler = async (req, res, next) => {
 
       ride.chatRooms = [...ride.chatRooms, newChatRoom._id];
 
-      // TODO 2021/10/13 cw: PromiseAll로 리팩토링
       await newChatRoom.save();
       await ride.save();
 

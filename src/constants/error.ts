@@ -16,6 +16,7 @@ const ERROR = {
   INVALID_CHAT_ROOM: 'Invalid chat room',
   INVALID_DEPARTURE_COORDINATE: 'Invalid departure coordinate',
   INVALID_DESTINATION_COORDINATE: 'Invalid destination coordinate',
+  INVALID_URL: 'Invalid URL',
 };
 
 export default ERROR;

@@ -56,7 +56,7 @@ userSchema.statics.findByToken = async function (token: string) {
 
     return await user.findOne({ kakaoId, token });
   } catch (err) {
-    throw createError(500, ERROR.INTERNAL_SERVER_ERROR);
+    throw createError(400, ERROR.INVALID_USER);
   }
 };
 

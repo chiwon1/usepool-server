@@ -13,7 +13,6 @@ export const list: RequestHandler = async (req, res, next) => {
       next(createError(400, ERROR.INVALID_USER));
     }
 
-    // TODO 2021/10/14 cw: to refactor with PromiseAll
     const listAsPassenger = await ChatRoom.find({ passenger: userId });
     await ChatRoom.populate(listAsPassenger, 'ride');
     await ChatRoom.populate(listAsPassenger, 'driver');
