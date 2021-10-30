@@ -7,11 +7,11 @@ export const auth: RequestHandler = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
-  if (!token) {
-    throw createError(401, ERROR.INVALID_TOKEN);
-  }
-
   try {
+    if (!token) {
+      throw createError(401, ERROR.INVALID_TOKEN);
+    }
+
     const user = await User.findByToken(token);
 
     if (!user) {
